@@ -4,7 +4,6 @@ import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteReq
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
 import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
-import com.senai.projetofinal.datasource.entity.PapelEntity;
 import com.senai.projetofinal.datasource.entity.PapelEnum;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;
 import com.senai.projetofinal.datasource.repository.DocenteRepository;
@@ -133,6 +132,25 @@ public class DocenteService {
         user.setId(inserirDocenteRequest.usuario());
         docente.setUsuario(user);
         docente.setNome(inserirDocenteRequest.nome());
+        docente.setDataNascimento(inserirDocenteRequest.dataNascimento());
+        docente.setGenero(inserirDocenteRequest.genero());
+        docente.setCpf(inserirDocenteRequest.cpf());
+        docente.setRg(inserirDocenteRequest.rg());
+        docente.setEstadoCivil(inserirDocenteRequest.estadoCivil());
+        docente.setTelefone(inserirDocenteRequest.telefone());
+        docente.setEmail(inserirDocenteRequest.email());
+        docente.setSenha(inserirDocenteRequest.senha());
+        docente.setNaturalidade(inserirDocenteRequest.naturalidade());
+        docente.setCep(inserirDocenteRequest.cep());
+        docente.setCidade(inserirDocenteRequest.cidade());
+        docente.setEstado(inserirDocenteRequest.estado());
+        docente.setLogradouro(inserirDocenteRequest.logradouro());
+        docente.setNumero(inserirDocenteRequest.numero());
+        docente.setComplemento(inserirDocenteRequest.complemento());
+        docente.setBairro(inserirDocenteRequest.bairro());
+        docente.setPontoReferencia(inserirDocenteRequest.pontoReferencia());
+        docente.setMaterias(inserirDocenteRequest.materias());
+
 
         DocenteEntity docenteSalvo = repository.save(docente);
 
@@ -140,6 +158,24 @@ public class DocenteService {
         return new DocenteResponse(
                 docenteSalvo.getId(),
                 docenteSalvo.getNome(),
+                docenteSalvo.getDataNascimento(),
+                docenteSalvo.getGenero(),
+                docenteSalvo.getCpf(),
+                docenteSalvo.getRg(),
+                docenteSalvo.getEstadoCivil(),
+                docenteSalvo.getTelefone(),
+                docenteSalvo.getEmail(),
+                docenteSalvo.getSenha(),
+                docenteSalvo.getNaturalidade(),
+                docenteSalvo.getCep(),
+                docenteSalvo.getCidade(),
+                docenteSalvo.getEstado(),
+                docenteSalvo.getLogradouro(),
+                docenteSalvo.getNumero(),
+                docenteSalvo.getComplemento(),
+                docenteSalvo.getBairro(),
+                docenteSalvo.getPontoReferencia(),
+                docenteSalvo.getMaterias(),
                 docenteSalvo.getUsuario()
         );
     }
@@ -173,13 +209,27 @@ public class DocenteService {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
-        if (repository.existsByNome(atualizarDocenteRequest.nome())) {
-            log.error("Um docente já existe com o nome: {}", atualizarDocenteRequest.nome());
-            throw new IllegalArgumentException("Um docente já existe com o nome passado");
-        }
 
         log.info("Atualizando docente com o id {}", entity.getId());
         entity.setNome(atualizarDocenteRequest.nome());
+        entity.setDataNascimento(atualizarDocenteRequest.dataNascimento());
+        entity.setGenero(atualizarDocenteRequest.genero());
+        entity.setCpf(atualizarDocenteRequest.cpf());
+        entity.setRg(atualizarDocenteRequest.rg());
+        entity.setEstadoCivil(atualizarDocenteRequest.estadoCivil());
+        entity.setTelefone(atualizarDocenteRequest.telefone());
+        entity.setEmail(atualizarDocenteRequest.email());
+        entity.setSenha(atualizarDocenteRequest.senha());
+        entity.setNaturalidade(atualizarDocenteRequest.naturalidade());
+        entity.setCep(atualizarDocenteRequest.cep());
+        entity.setCidade(atualizarDocenteRequest.cidade());
+        entity.setEstado(atualizarDocenteRequest.estado());
+        entity.setLogradouro(atualizarDocenteRequest.logradouro());
+        entity.setNumero(atualizarDocenteRequest.numero());
+        entity.setComplemento(atualizarDocenteRequest.complemento());
+        entity.setBairro(atualizarDocenteRequest.bairro());
+        entity.setPontoReferencia(atualizarDocenteRequest.pontoReferencia());
+        entity.setMaterias(atualizarDocenteRequest.materias());
         return repository.save(entity);
     }
 }
