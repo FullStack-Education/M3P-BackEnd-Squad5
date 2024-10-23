@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: "meuUsuario"
+      POSTGRES_PASSWORD: "minhaSenha"
+      POSTGRES_DB: "sistema-escolar"
+    ports:
+      - "1432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring_app
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    networks:
+      - app_network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_container:5432/sistema-escolar
+      SPRING_DATASOURCE_USERNAME: meuUsuario
+      SPRING_DATASOURCE_PASSWORD: minhaSenha
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
