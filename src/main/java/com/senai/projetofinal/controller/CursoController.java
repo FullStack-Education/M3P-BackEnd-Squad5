@@ -225,4 +225,48 @@ public class CursoController {
         }
     }
 
+    @Operation(
+            summary = "Listar cursos de um aluno",
+            description = "Lista todos os cursos de um aluno"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK - Lista de cursos retornada com sucesso!",
+                    content = @Content(
+                            schema = @Schema(implementation = CursoResponse.class),
+                            examples = @ExampleObject(
+                                    value = "[{ \"id\": 1, \"nome\": \"Curso A\" }, { \"id\": 2, \"nome\": \"Curso B\" }]"))),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Dados ausentes ou inválidos",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "ID do aluno não pode ser nulo ou vazio"
+                            )
+                    )),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Credenciais inválidas",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "Usuário não autorizado"
+                            )
+                    )),
+            @ApiResponse(responseCode = "404", description = "Not Found - Aluno não encontrado",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "Aluno não encontrado"
+                            )
+                    ))
+    })
+    @GetMapping("/cursos/{idAluno}")
+    public ResponseEntity<?> listarCursosPorAlunoTurma(
+            @RequestParam("idAluno") Long idAluno,
+            @RequestHeader("Authorization") String token) {
+        try {
+            List<CursoResponse> cursos = service.listarCursosPorAlunoId(idAluno, token.substring(7));
+            return ResponseEntity.ok().body(cursos);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (java.lang.SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
