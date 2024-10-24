@@ -6,11 +6,12 @@ import com.senai.projetofinal.controller.dto.response.curso.CursoResponse;
 import com.senai.projetofinal.datasource.entity.CursoEntity;
 import com.senai.projetofinal.datasource.repository.CursoRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
-import jakarta.transaction.Transactional;
+import com.senai.projetofinal.infra.exception.error.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -109,7 +110,7 @@ public class CursoService {
 
         if (!"admin".equals(role) && !"pedagogico".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
-            throw new SecurityException("Tentativa de atualizar não autorizada");
+            throw new SecurityException("Usuário não autorizado");
         }
 
         CursoEntity entity = buscarPorId(id, token);
@@ -127,5 +128,30 @@ public class CursoService {
         log.info("Atualizando curso com o id {}", entity.getId());
         entity.setNome(atualizarCursoRequest.nome());
         return repository.save(entity);
+    }
+
+    public List<CursoResponse> listarCursosPorAlunoId(Long idAluno, String token) {
+        String role = tokenService.buscaCampo(token, "scope");
+
+        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+            log.error("Usuário não autorizado: {}", role);
+            throw new SecurityException("Usuário não autorizado");
+        }
+
+        if (idAluno == null) {
+            log.error("ID do aluno não pode ser nulo ou vazio");
+            throw new IllegalArgumentException("ID do aluno não pode ser nulo ou vazio");
+        }
+
+        List<CursoEntity> cursos = repository.findCursosByAlunoTurma(idAluno);
+
+        if (cursos.isEmpty()) {
+            log.error("Aluno não encontrado");
+            throw new NotFoundException("Aluno não encontrado");
+        }
+
+        return cursos.stream()
+                .map(curso -> new CursoResponse(curso.getId(), curso.getNome()))
+                .collect(Collectors.toList());
     }
 }
