@@ -15,4 +15,6 @@ public interface DocenteRepository extends JpaRepository<DocenteEntity, Long> {
     List<DocenteEntity> findByUsuario_Papel_Nome(PapelEnum papel);
 
     boolean existsByNome(String nome);
+
+    boolean existsByEmail(String email);
 }

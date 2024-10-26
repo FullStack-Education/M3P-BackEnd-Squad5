@@ -1,5 +1,6 @@
 package com.senai.projetofinal.service;
 
+import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteRequest;
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
 import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
@@ -10,6 +11,7 @@ import com.senai.projetofinal.datasource.repository.DocenteRepository;
 import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +21,15 @@ import java.util.List;
 public class DocenteService {
 
     private final DocenteRepository repository;
-
     private final UsuarioRepository usuarioRepository;
-
     private final TokenService tokenService;
+    private final UsuarioService usuarioService;
 
-    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, TokenService tokenService) {
+    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, TokenService tokenService, UsuarioService usuarioService) {
         this.repository = docenteRepository;
         this.usuarioRepository = usuarioRepository;
         this.tokenService = tokenService;
+        this.usuarioService = usuarioService;
     }
 
     public List<DocenteEntity> listarTodos(String token) {
@@ -92,7 +94,7 @@ public class DocenteService {
         }
 
         if (inserirDocenteRequest.nome() == null || inserirDocenteRequest.nome().isBlank()) {
-            log.error("Nome não pode ser nulo ou vazio");
+            log.error("Nome não pode ser nulo ou vazioooo");
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
@@ -101,21 +103,43 @@ public class DocenteService {
             throw new IllegalArgumentException("Um docente já existe com o nome passado");
         }
 
-        Long usuarioId = Long.valueOf(tokenService.buscaCampo(token, "sub"));
+        if (inserirDocenteRequest.email() == null || inserirDocenteRequest.email().isBlank()) {
+            log.error("Email não pode ser nulo ou vazio");
+            throw new IllegalArgumentException("Email não pode ser nulo ou vazio");
+        }
 
-        UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> {
-                    log.error("Usuário não encontrado com o id: {}", usuarioId);
-                    return new RuntimeException("Usuário não encontrado");
-                });
+        if (repository.existsByEmail(inserirDocenteRequest.nome())) {
+            log.error("Um docente já existe com o email: {}", inserirDocenteRequest.email());
+            throw new IllegalArgumentException("Um docente já existe com o email passado");
+        }
+
+        if (inserirDocenteRequest.senha() == null || inserirDocenteRequest.senha().isBlank()) {
+            log.error("Campo senha não pode ser nulo ou vazio");
+            throw new IllegalArgumentException("Campo senha não pode ser nulo ou vazio");
+        }
+
 
         UsuarioEntity newDocenteUsuario = usuarioRepository.findById(inserirDocenteRequest.usuario())
-                .orElseThrow(() -> {
-                    log.error("Usuário não encontrado com o id: {}", inserirDocenteRequest.usuario());
-                    return new RuntimeException("Usuário não encontrado");
-                });
+                .orElseGet(() -> {
+                            log.warn("Usuário não encontrado com o id: {}. Criando um novo usuário.", inserirDocenteRequest.usuario());
 
+
+                            // Criar um request padrão para o novo login
+                            InserirLoginRequest inserirLoginRequest = new InserirLoginRequest(
+                                    inserirDocenteRequest.email(),
+                                    inserirDocenteRequest.senha(),
+                                    "professor"
+                            );
+
+                            usuarioService.cadastraNovoLogin(inserirLoginRequest, token);
+
+
+                            return usuarioRepository.findByLogin(inserirDocenteRequest.email())
+                                    .orElseThrow(() -> new RuntimeException("Falha ao criar novo usuário"));
+
+                });
         String newDocentePapel = newDocenteUsuario.getPapel().getNome().toString();
+
 
         if (("pedagogico".equals(role) || "recruiter".equals(role)) && !"professor".equals(newDocentePapel)) {
             log.error("Usuário pedagogico ou recruiter só pode salvar um docente com o papel professor");
@@ -208,6 +232,22 @@ public class DocenteService {
             log.error("Nome não pode ser nulo ou vazio");
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
+
+        if (atualizarDocenteRequest.email() == null || atualizarDocenteRequest.email().isBlank()) {
+            log.error("Email não pode ser nulo ou vazio");
+            throw new IllegalArgumentException("Email não pode ser nulo ou vazio");
+        }
+
+        if (repository.existsByEmail(atualizarDocenteRequest.nome())) {
+            log.error("Um docente já existe com o email: {}", atualizarDocenteRequest.email());
+            throw new IllegalArgumentException("Um docente já existe com o email passado");
+        }
+
+        if (atualizarDocenteRequest.senha() == null || atualizarDocenteRequest.senha().isBlank()) {
+            log.error("Campo senha não pode ser nulo ou vazio");
+            throw new IllegalArgumentException("Campo senha não pode ser nulo ou vazio");
+        }
+
 
 
         log.info("Atualizando docente com o id {}", entity.getId());
