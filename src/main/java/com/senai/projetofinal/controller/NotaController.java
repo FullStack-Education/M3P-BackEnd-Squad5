@@ -38,8 +38,10 @@ public class NotaController {
         try {
             List<NotaEntity> listarNotas = service.listarTodos(token.substring(7));
             return ResponseEntity.ok().body(listarNotas);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -50,8 +52,10 @@ public class NotaController {
         try {
             NotaEntity nota = service.buscarPorId(id, token.substring(7));
             return ResponseEntity.ok(nota);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -62,8 +66,10 @@ public class NotaController {
         try {
             List<NotaEntity> notas = service.buscarNotasPorDocenteId(docente_id, token.substring(7));
             return ResponseEntity.ok(notas);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
     @GetMapping("/alunos/{aluno_id}")
@@ -73,8 +79,10 @@ public class NotaController {
         try {
             List<NotaEntity> notas = service.buscarNotasPorAlunoId(aluno_id, token.substring(7));
             return ResponseEntity.ok(notas);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -122,7 +130,9 @@ public class NotaController {
         try {
             NotaResponse criarNotaResponse = service.salvar(inserirNotaRequest, token.substring(7));
             return new ResponseEntity<>(criarNotaResponse, HttpStatus.CREATED);
-        } catch (Exception e) {
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -134,8 +144,10 @@ public class NotaController {
         try {
             service.removerPorId(id, token.substring(7));
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -146,6 +158,8 @@ public class NotaController {
             @RequestHeader("Authorization") String token) {
         try {
             return ResponseEntity.ok(service.atualizar(atualizarNotaRequest, id, token.substring(7)));
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
