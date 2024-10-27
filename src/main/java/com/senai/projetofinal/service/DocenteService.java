@@ -69,7 +69,7 @@ public class DocenteService {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
-        DocenteEntity docente = repository.findById(id).orElseThrow(() -> new NotFoundException("Docente não encontrado"));
+        DocenteEntity docente = repository.findById(id).orElseThrow(() -> new NotFoundException("Nenhum docente com o ID passado foi encontrado"));
 
         if ("pedagogico".equals(role) || "recruiter".equals(role)) {
             if (docente.getUsuario().getPapel().getNome() == PapelEnum.PROFESSOR) {
@@ -153,7 +153,7 @@ public class DocenteService {
 
         DocenteEntity docente = new DocenteEntity();
         UsuarioEntity user = new UsuarioEntity();
-        user.setId(inserirDocenteRequest.usuario());
+        user.setId(newDocenteUsuario.getId());
         docente.setUsuario(user);
         docente.setNome(inserirDocenteRequest.nome());
         docente.setDataNascimento(inserirDocenteRequest.dataNascimento());
