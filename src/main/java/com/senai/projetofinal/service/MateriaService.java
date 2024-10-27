@@ -60,7 +60,7 @@ public class MateriaService {
         log.info("Matéria com id {} encontrada", id);
         return repository.findById(id).orElseThrow(() -> {
             log.error("Matéria não encontrada com o id: {}", id);
-            return new NotFoundException("Matéria não encontrada");
+            return new NotFoundException("Nenhuma matéria com o ID passado foi encontrada");
         });
     }
 
