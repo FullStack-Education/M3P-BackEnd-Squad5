@@ -2,7 +2,6 @@ package com.senai.projetofinal.controller;
 
 import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteRequest;
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
-import com.senai.projetofinal.controller.dto.response.curso.CursoResponse;
 import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
@@ -312,30 +311,38 @@ public class DocenteController {
                     content = @Content(
                             schema = @Schema(implementation = DocenteResponse.class),
                             examples = @ExampleObject(
-                                    value = "{ \"Nome\": \"nome do curso\" }"))),
-            @ApiResponse(responseCode = "400", description = "Bad Request - Dados ausentes ou inválidos",
-                    content = @Content(
-                            examples = @ExampleObject(
-                                    value = "{ \"nome\": \"Logan\", " +
-                                            "\"dataNascimento\": \"12-05-1882\", " +
+                                    value = "{ \"id\": 9, " +
+                                            "\"nome\": \"Charles Xavier 2\", " +
+                                            "\"dataNascimento\": \"1952-05-12\", " +
                                             "\"genero\": \"MASCULINO\", " +
-                                            "\"cpf\": \"12345678910\", " +
+                                            "\"cpf\": \"123.456.789-10\", " +
                                             "\"rg\": \"987654321\", " +
                                             "\"estadoCivil\": \"Solteiro\", " +
                                             "\"telefone\": \"(11) 99999-9999\", " +
-                                            "\"email\": \"logan.wolverine@xmen.com\", " +
-                                            "\"senha\": \"adamantium123\", " +
-                                            "\"naturalidade\": \"Alberta\", " +
+                                            "\"email\": \"charles.xavier@xmen.com\", " +
+                                            "\"senha\": \"mindcontrol123\", " +
+                                            "\"naturalidade\": \"Nova York\", " +
                                             "\"cep\": \"01000-000\", " +
                                             "\"cidade\": \"Nova York\", " +
                                             "\"estado\": \"NY\", " +
                                             "\"logradouro\": \"Xavier Institute\", " +
                                             "\"numero\": \"1000\", " +
-                                            "\"complemento\": \"Subsolo\", " +
+                                            "\"complemento\": \"Mansão X\", " +
                                             "\"bairro\": \"Westchester\", " +
-                                            "\"pontoReferencia\": \"Próximo à Mansão X\", " +
-                                            "\"materias\": [\"Combate\", \"Autodefesa\", \"História Mutante\"], " +
-                                            "\"usuario\": 14 }"
+                                            "\"pontoReferencia\": \"Próximo ao Jardim Cerebro\", " +
+                                            "\"materias\": [\"Telepatia Avançada\", \"Liderança e Estratégia\", \"História dos Mutantes\", \"Treinamento Mental\"], " +
+                                            "\"dataEntrada\": \"2024-10-26\", " +
+                                            "\"usuario\": { " +
+                                            "\"id\": 9, " +
+                                            "\"login\": \"log.wolverine@xmen.com\", " +
+                                            "\"senha\": \"$2a$10$kor5BlkTyOqzvLZOPyx5GOmdUMhDLXH4RcWNniXbxfRaLKEoumP4m\", " +
+                                            "\"papel\": { " +
+                                            "\"id\": 4, " +
+                                            "\"nome\": \"PROFESSOR\" } } }"))),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Dados ausentes ou inválidos",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "Nome não pode ser nulo ou vazio"
                             )
                     )
             ),
@@ -390,6 +397,8 @@ public class DocenteController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (SecurityException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

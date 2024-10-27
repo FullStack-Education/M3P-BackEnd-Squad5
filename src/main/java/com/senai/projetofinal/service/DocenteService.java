@@ -108,7 +108,7 @@ public class DocenteService {
             throw new IllegalArgumentException("Email não pode ser nulo ou vazio");
         }
 
-        if (repository.existsByEmail(inserirDocenteRequest.nome())) {
+        if (repository.existsByEmail(inserirDocenteRequest.email())) {
             log.error("Um docente já existe com o email: {}", inserirDocenteRequest.email());
             throw new IllegalArgumentException("Um docente já existe com o email passado");
         }
@@ -231,6 +231,11 @@ public class DocenteService {
         if (atualizarDocenteRequest.nome() == null || atualizarDocenteRequest.nome().isBlank()) {
             log.error("Nome não pode ser nulo ou vazio");
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
+        }
+
+        if (repository.existsByNome(atualizarDocenteRequest.nome())) {
+            log.error("Um docente já existe com o nome: {}", atualizarDocenteRequest.nome());
+            throw new IllegalArgumentException("Um docente já existe com o nome passado");
         }
 
         if (atualizarDocenteRequest.email() == null || atualizarDocenteRequest.email().isBlank()) {
