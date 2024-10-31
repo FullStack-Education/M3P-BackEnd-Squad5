@@ -2,6 +2,7 @@ package com.senai.projetofinal.controller;
 
 import com.senai.projetofinal.controller.dto.request.nota.AtualizarNotaRequest;
 import com.senai.projetofinal.controller.dto.request.nota.InserirNotaRequest;
+import com.senai.projetofinal.controller.dto.response.curso.CursoResponse;
 import com.senai.projetofinal.controller.dto.response.nota.NotaResponse;
 import com.senai.projetofinal.datasource.entity.NotaEntity;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
@@ -32,6 +33,31 @@ public class NotaController {
         this.service = service;
     }
 
+
+    @Operation(
+            summary = "Listar todas Notas",
+            description = "Lista todas as Notas no banco de dados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                        description = "OK - Notas listadas com sucesso!",
+                        content = @Content(
+                                schema = @Schema(implementation = CursoResponse.class),
+                                examples = @ExampleObject(
+                                        value = "[{\"aluno\": 1, \"docente\": 1, \"materia\": 1, \"valor\": 10}," +
+                                                "{\"aluno\": 2, \"docente\": 1, \"materia\": 1, \"valor\": 8 }," +
+                                                "{\"aluno\": 2, \"docente\": 2, \"materia\": 3, \"valor\": 9}]"))),
+            @ApiResponse(responseCode = "401",
+                        description = "Unauthorized - Credenciais inválidas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Usuário não autorizado"))),
+            @ApiResponse(responseCode = "404",
+                        description = "Not Found - Não há notas cadastradas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Não há notas cadastrados")))
+    })
     @GetMapping
     public ResponseEntity<?> listarTodasNotas(
             @RequestHeader("Authorization") String token) {
@@ -45,6 +71,29 @@ public class NotaController {
         }
     }
 
+
+    @Operation(
+            summary = "Buscar nota por id",
+            description = "Busca uma nota pelo seu ID no banco de dados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                        description = "OK - Nota encontrada com sucesso!",
+                        content = @Content(
+                                schema = @Schema(implementation = CursoResponse.class),
+                                examples = @ExampleObject(
+                                        value = "{\"aluno\": 1, \"docente\": 1, \"materia\": 1, \"valor\": 10}"))),
+            @ApiResponse(responseCode = "401",
+                        description = "Unauthorized - Credenciais inválidas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Usuário não autorizado"))),
+            @ApiResponse(responseCode = "404",
+                        description = "Not Found - Nenhuma nota encontrada",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Nenhuma nota com o ID passado foi encontrada")))
+    })
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarNotaPorId(
             @PathVariable Long id,
@@ -59,6 +108,30 @@ public class NotaController {
         }
     }
 
+
+    @Operation(
+            summary = "Buscar nota por docente",
+            description = "Busca todas as notas dadas por um docente no banco de dados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "OK - Nota encontrada com sucesso!",
+                    content = @Content(
+                            schema = @Schema(implementation = CursoResponse.class),
+                            examples = @ExampleObject(
+                                    value = "{\"aluno\": 1, \"docente\": 1, \"materia\": 1, \"valor\": 10}," +
+                                            "{\"aluno\": 1, \"docente\": 1, \"materia\": 1, \"valor\": 5}"))),
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized - Credenciais inválidas",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "Usuário não autorizado"))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found - Nenhuma nota encontrada",
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "Nenhuma nota com o ID passado foi encontrada")))
+    })
     @GetMapping("/docentes/{docente_id}")
     public ResponseEntity<?> getNotasByDocente(
             @PathVariable Long docente_id,
@@ -72,6 +145,31 @@ public class NotaController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+
+    @Operation(
+            summary = "Listar notas de um aluno",
+            description = "Lista todas as notas de um aluno"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                        description = "OK - Lista de notas retornada com sucesso!",
+                        content = @Content(
+                                schema = @Schema(implementation = CursoResponse.class),
+                                examples = @ExampleObject(
+                                        value = "[{\"aluno\": 1,\"docente\": 1, \"materia\": 1, \"valor\": 10}," +
+                                                "{\"aluno\": 1, \"docente\": 1, \"materia\": 1, \"valor\": 7}]"))),
+            @ApiResponse(responseCode = "401",
+                        description = "Unauthorized - Credenciais inválidas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Usuário não autorizado"))),
+            @ApiResponse(responseCode = "404",
+                        description = "Not Found - Aluno não encontrado",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Aluno não encontrado")))
+    })
     @GetMapping("/alunos/{aluno_id}")
     public ResponseEntity<?> getNotasByAluno(
             @PathVariable Long aluno_id,
@@ -123,6 +221,29 @@ public class NotaController {
         }
     }
 
+
+    @Operation(
+            summary = "Cadastrar uma nova nota",
+            description = "Cadastra uma nova nota no banco de dados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                        description = "Created - Nota cadastrada com sucesso!",
+                        content = @Content(
+                                schema = @Schema(implementation = CursoResponse.class),
+                                examples = @ExampleObject(
+                                        value = "{ \"aluno\": 1, + \"docente\": 1, \"materia\": 1, \"valor\": 6 }"))),
+            @ApiResponse(responseCode = "400",
+                        description = "Bad Request - Dados ausentes ou inválidos",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Matéria não pode ser nulo ou vazio"))),
+            @ApiResponse(responseCode = "401",
+                        description = "Unauthorized - Credenciais inválidas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Usuário não autorizado")))
+    })
     @PostMapping
     public ResponseEntity<?> criarNota(
             @RequestBody InserirNotaRequest inserirNotaRequest,
@@ -137,6 +258,30 @@ public class NotaController {
         }
     }
 
+
+    @Operation(
+            summary = "Deletar uma nota",
+            description = "Deleta a nota com ID passado do banco de dados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204",
+                        description = "No Content - Nota deletada com sucesso!",
+                        content = @Content(
+                                schema = @Schema(implementation = CursoResponse.class),
+                                examples = @ExampleObject(
+                                        value = "{\"aluno\":, \"docente\":, \"materia\":, \"valor\":}"))),
+            @ApiResponse(responseCode = "401",
+                        description = "Unauthorized - Credenciais inválidas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Usuário não autorizado"))),
+            @ApiResponse(responseCode = "404",
+                        description = "Not Found - Nenhuma nota encontrada",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Nenhuma nota com o ID passado foi encontrado")
+                        ))
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarNota(
             @PathVariable Long id,
@@ -151,6 +296,34 @@ public class NotaController {
         }
     }
 
+
+    @Operation(
+            summary = "Atualizar uma nota",
+            description = "Atualiza a nota com ID passado no banco de dados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                        description = "OK - Nota atualizado com sucesso!",
+                        content = @Content(
+                                schema = @Schema(implementation = CursoResponse.class),
+                                examples = @ExampleObject(
+                                        value = "{ \"valor\": 10 }"))),
+            @ApiResponse(responseCode = "400",
+                        description = "Bad Request - Dados ausentes ou inválidos",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Valor não pode ser nulo ou vazio"))),
+            @ApiResponse(responseCode = "401",
+                        description = "Unauthorized - Credenciais inválidas",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Usuário não autorizado"))),
+            @ApiResponse(responseCode = "404",
+                        description = "Not Found - Nenhuma nota encontrada",
+                        content = @Content(
+                                examples = @ExampleObject(
+                                        value = "Nenhuma nota com o ID passado foi encontrada")))
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarNota(
             @PathVariable Long id,
