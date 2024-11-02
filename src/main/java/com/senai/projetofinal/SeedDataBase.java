@@ -69,6 +69,7 @@ class SeedDatabase {
                 PapelEntity alunoPapel = papelRepository.findByNome(PapelEnum.ALUNO).orElseThrow();
                 aluno.setPapel(alunoPapel);
                 usuarioRepository.save(aluno);
+
             }
         };
     }
