@@ -90,4 +90,29 @@ class UsuarioServiceTest {
 
         assertThrows(RuntimeException.class, () -> usuarioService.buscarUsuarioPorId(userId));
     }
+
+    @Test
+    void tokenService_BuscaCampo() {
+        String token = "valid-token";
+        String campo = "scope";
+        String expectedValue = "admin";
+
+        when(tokenService.buscaCampo(token, campo)).thenReturn(expectedValue);
+
+        String result = tokenService.buscaCampo(token, campo);
+
+        assertEquals(expectedValue, result);
+    }
+
+    @Test
+    void tokenService_BuscaCampo_InvalidToken() {
+        String token = "invalid-token";
+        String campo = "scope";
+
+        when(tokenService.buscaCampo(token, campo)).thenReturn(null);
+
+        String result = tokenService.buscaCampo(token, campo);
+
+        assertNull(result);
+    }
 }
