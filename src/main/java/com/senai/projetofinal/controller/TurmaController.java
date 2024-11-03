@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Turma")
+@Tag(name = "Turmas")
 @RestController
 @RequestMapping("/turmas")
 @RequiredArgsConstructor
