@@ -3,6 +3,7 @@ package com.senai.projetofinal.controller.dto.request.aluno;
 public record AtualizarAlunoRequest(
         String nome,
         String email,
+        String senha,
         String dataNascimento,
         String genero,
         String cpf,
@@ -12,12 +13,12 @@ public record AtualizarAlunoRequest(
         String naturalidade,
         String cep,
         String cidade,
+        String estado,
         String logradouro,
         String numero,
         String complemento,
         String bairro,
         String pontoReferencia,
-        String materia,
         Long turma
 ) {
 }

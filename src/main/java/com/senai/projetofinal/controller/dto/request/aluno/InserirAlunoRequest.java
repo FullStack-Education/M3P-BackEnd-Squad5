@@ -22,6 +22,7 @@ public record InserirAlunoRequest(
         String naturalidade,
         String cep,
         String cidade,
+        String estado,
         String logradouro,
         String numero,
         String complemento,

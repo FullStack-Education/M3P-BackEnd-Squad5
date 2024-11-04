@@ -112,6 +112,8 @@ public class AlunoService {
         aluno.setTelefone(inserirAlunoRequest.telefone());
         aluno.setNaturalidade(inserirAlunoRequest.naturalidade());
         aluno.setCep(inserirAlunoRequest.cep());
+        aluno.setCidade(inserirAlunoRequest.cidade());
+        aluno.setEstado(inserirAlunoRequest.estado());
         aluno.setLogradouro(inserirAlunoRequest.logradouro());
         aluno.setNumero(inserirAlunoRequest.numero());
         aluno.setComplemento(inserirAlunoRequest.complemento());
@@ -171,11 +173,6 @@ public class AlunoService {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
-        if (repository.existsByNome(atualizarAlunoRequest.nome())) {
-            log.error("Um aluno já existe com o nome: {}", atualizarAlunoRequest.nome());
-            throw new IllegalArgumentException("Um aluno já existe com o nome passado");
-        }
-
         TurmaEntity turma = turmaRepository.findById(atualizarAlunoRequest.turma())
                 .orElseThrow(() -> {
                     log.error("Turma não encontrada");
@@ -183,9 +180,27 @@ public class AlunoService {
                 });
 
         log.info("Atualizando aluno com o id {}", id);
+
         entity.setNome(atualizarAlunoRequest.nome());
+        entity.setEmail(atualizarAlunoRequest.email());
+        entity.setSenha(atualizarAlunoRequest.senha());
         entity.setDataNascimento(atualizarAlunoRequest.dataNascimento());
+        entity.setGenero(atualizarAlunoRequest.genero());
+        entity.setCpf(atualizarAlunoRequest.cpf());
+        entity.setRg(atualizarAlunoRequest.rg());
+        entity.setEstadoCivil(atualizarAlunoRequest.estadoCivil());
+        entity.setTelefone(atualizarAlunoRequest.telefone());
+        entity.setNaturalidade(atualizarAlunoRequest.naturalidade());
+        entity.setCep(atualizarAlunoRequest.cep());
+        entity.setCidade(atualizarAlunoRequest.cidade());
+        entity.setEstado(atualizarAlunoRequest.estado());
+        entity.setLogradouro(atualizarAlunoRequest.logradouro());
+        entity.setNumero(atualizarAlunoRequest.numero());
+        entity.setComplemento(atualizarAlunoRequest.complemento());
+        entity.setBairro(atualizarAlunoRequest.bairro());
+        entity.setPontoReferencia(atualizarAlunoRequest.pontoReferencia());
         entity.setTurma(turma);
+
         return repository.save(entity);
     }
 }
