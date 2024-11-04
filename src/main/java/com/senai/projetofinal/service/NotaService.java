@@ -63,7 +63,7 @@ public class NotaService {
     public NotaEntity buscarPorId(Long id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"professor".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"professor".equals(role) || !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
@@ -93,7 +93,7 @@ public class NotaService {
 
         Long usuarioAluno = aluno.getUsuario().getId();
 
-        if ("admin".equals(role) || "pedagogico".equals(role) || "professor".equals(role)) {
+        if ("admin".equals(role) || "pedagogico".equals(role) || "professor".equals(role) || !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             return repository.findNotasByAlunoId(aluno_id);
         } else if (!Objects.equals(usuario, usuarioAluno)) {
@@ -130,7 +130,7 @@ public class NotaService {
 
         Long usuarioDocente = docente.getUsuario().getId();
 
-        if ("admin".equals(role) || "pedagogico".equals(role)) {
+        if ("admin".equals(role) || "pedagogico".equals(role) || !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             return repository.findNotasByDocenteId(docente_id);
         } else if (!Objects.equals(usuario, usuarioDocente)) {

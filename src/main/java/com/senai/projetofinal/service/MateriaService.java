@@ -32,7 +32,7 @@ public class MateriaService {
     public List<MateriaEntity> listarTodos(String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
@@ -52,7 +52,7 @@ public class MateriaService {
     public MateriaEntity buscarPorId(Long id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
@@ -67,7 +67,7 @@ public class MateriaService {
     public List<MateriaEntity> buscarMateriasPorCursoId(Long curso_id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
@@ -87,7 +87,7 @@ public class MateriaService {
     public MateriaResponse salvar(InserirMateriaRequest inserirMateriaRequest, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }

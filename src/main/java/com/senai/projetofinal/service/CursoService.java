@@ -29,7 +29,7 @@ public class CursoService {
     public List<CursoEntity> listarTodos(String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
@@ -48,7 +48,7 @@ public class CursoService {
     public CursoEntity buscarPorId(Long id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
@@ -133,7 +133,7 @@ public class CursoService {
     public List<CursoResponse> listarCursosPorAlunoId(Long idAluno, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"aluno".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
