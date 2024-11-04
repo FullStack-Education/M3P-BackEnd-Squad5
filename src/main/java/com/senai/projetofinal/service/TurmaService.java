@@ -19,16 +19,14 @@ import java.util.List;
 
 @Service
 @Slf4j
+
+
 public class TurmaService {
 
     private final TurmaRepository repository;
-
     private final UsuarioRepository usuarioRepository;
-
     private final DocenteRepository docenteRepository;
-
     private final CursoRepository cursoRepository;
-
     private final TokenService tokenService;
 
     public TurmaService(TurmaRepository repository, UsuarioRepository usuarioRepository, DocenteRepository docenteRepository, CursoRepository cursoRepository, TokenService tokenService) {
@@ -55,8 +53,7 @@ public class TurmaService {
         }
 
         log.info("Todas as turmas listadas");
-
-        return repository.findAll();
+        return turmas;
     }
 
     public TurmaEntity buscarPorId(Long id, String token) {
@@ -67,7 +64,6 @@ public class TurmaService {
             throw new SecurityException("Usuário não autorizado");
         }
 
-        log.info("Turma com o id {} encontrada", id);
         return repository.findById(id).orElseThrow(() -> {
             log.error("Turma não encontrada");
             return new NotFoundException("Turma não encontrada");
@@ -77,20 +73,12 @@ public class TurmaService {
     public TurmaResponse salvar(InserirTurmaRequest inserirTurmaRequest, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"professor".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
 
-        if (inserirTurmaRequest.nome() == null || inserirTurmaRequest.nome().isBlank()) {
-            log.error("Nome não pode ser nulo ou vazio");
-            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
-        }
-
-        if (repository.existsByNome(inserirTurmaRequest.nome())) {
-            log.error("Uma turma já existe com o nome: {}", inserirTurmaRequest.nome());
-            throw new IllegalArgumentException("Uma turma já existe com o nome passado");
-        }
+        validateRequestFields(inserirTurmaRequest);
 
         CursoEntity curso = cursoRepository.findById(inserirTurmaRequest.curso())
                 .orElseThrow(() -> {
@@ -104,25 +92,25 @@ public class TurmaService {
                     return new NotFoundException("Docente não encontrado");
                 });
 
-        String docenteProfessor = docente.getUsuario().getPapel().getNome().toString();
-
-        if (!"professor".equals(docenteProfessor)) {
-            log.error("Apenas um docente com papel professor pode ser atribuído a uma turma");
-            throw new IllegalArgumentException("Apenas um docente com papel professor pode ser atribuído a uma turma");
-        }
+        validateDocenteRole(docente);
 
         TurmaEntity turma = new TurmaEntity();
         turma.setNome(inserirTurmaRequest.nome());
+        turma.setDataInicio(inserirTurmaRequest.dataInicio());
+        turma.setDataTermino(inserirTurmaRequest.dataTermino());
+        turma.setHorario(inserirTurmaRequest.horario());
         turma.setDocente(docente);
         turma.setCurso(curso);
 
         TurmaEntity turmaSalva = repository.save(turma);
-
-        log.info("Salvando turma com o nome {}", turmaSalva.getNome());
+        log.info("Turma salva com o nome {}", turmaSalva.getNome());
 
         return new TurmaResponse(
                 turmaSalva.getId(),
                 turmaSalva.getNome(),
+//                turmaSalva.getDataInicio(),
+//                turmaSalva.getDataTermino(),
+//                turmaSalva.getHorario(),
                 turmaSalva.getDocente(),
                 turmaSalva.getCurso()
         );
@@ -145,6 +133,7 @@ public class TurmaService {
         repository.deleteById(id);
     }
 
+
     public TurmaEntity atualizar(AtualizarTurmaRequest atualizarTurmaRequest, Long id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
@@ -153,22 +142,11 @@ public class TurmaService {
             throw new SecurityException("Usuário não autorizado");
         }
 
-        if (!repository.existsById(id)) {
+        TurmaEntity entity = repository.findById(id).orElseThrow(() -> {
             log.error("Nenhuma turma encontrada com o id: {}", id);
-            throw new NotFoundException("Nenhuma turma encontrada com o id passado");
-        }
+            return new NotFoundException("Nenhuma turma encontrada com o id passado");
+        });
 
-        if (atualizarTurmaRequest.nome() == null || atualizarTurmaRequest.nome().isBlank()) {
-            log.error("Nome não pode ser nulo ou vazio");
-            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
-        }
-
-        if (repository.existsByNome(atualizarTurmaRequest.nome())) {
-            log.error("Uma turma já existe com o nome: {}", atualizarTurmaRequest.nome());
-            throw new IllegalArgumentException("Uma turma já existe com o nome passado");
-        }
-
-        TurmaEntity entity = buscarPorId(id, token);
 
         CursoEntity curso = cursoRepository.findById(atualizarTurmaRequest.curso())
                 .orElseThrow(() -> {
@@ -182,18 +160,33 @@ public class TurmaService {
                     return new NotFoundException("Docente não encontrado");
                 });
 
-        String docenteProfessor = docente.getUsuario().getPapel().getNome().toString();
-
-        if (!"professor".equals(docenteProfessor)) {
-            log.error("Apenas um docente com papel professor pode ser atribuído a uma turma");
-            throw new IllegalArgumentException("Apenas um docente com papel professor pode ser atribuído a uma turma");
-        }
-
-        log.info("Atualizando turma com o id {}", entity.getId());
+        validateDocenteRole(docente);
 
         entity.setNome(atualizarTurmaRequest.nome());
+        entity.setDataInicio(atualizarTurmaRequest.dataInicio());
+        entity.setDataTermino(atualizarTurmaRequest.dataTermino());
+        entity.setHorario(atualizarTurmaRequest.horario());
         entity.setDocente(docente);
         entity.setCurso(curso);
+        log.info("Turma atualizada com o id {}", entity.getId());
+
         return repository.save(entity);
+    }
+
+    private void validateRequestFields(InserirTurmaRequest request) {
+        if (request.nome() == null || request.nome().isBlank()) {
+            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
+        }
+
+        if (repository.existsByNome(request.nome())) {
+            throw new IllegalArgumentException("Uma turma já existe com o nome passado");
+        }
+    }
+
+    private void validateDocenteRole(DocenteEntity docente) {
+        String docenteRole = docente.getUsuario().getPapel().getNome().toString();
+        if (!"professor".equalsIgnoreCase(docenteRole)) {
+            throw new IllegalArgumentException("Apenas um docente com papel professor pode ser atribuído a uma turma");
+        }
     }
 }

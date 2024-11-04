@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record LoginRequest (
         String login,
         String senha,
+        String email,
         @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate localDate,
 

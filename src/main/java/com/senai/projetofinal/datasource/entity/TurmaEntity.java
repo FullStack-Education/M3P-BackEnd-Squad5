@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -28,4 +29,13 @@ public class TurmaEntity {
     @OneToMany(mappedBy = "turma", fetch = FetchType.EAGER)
     @JsonBackReference
     private List<AlunoEntity> alunos;
+
+    @Column(nullable = false)
+    private LocalDate dataInicio;
+
+    @Column(nullable = false)
+    private LocalDate dataTermino;
+
+    @Column(nullable = false)
+    private String horario;
 }

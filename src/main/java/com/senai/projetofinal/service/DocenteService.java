@@ -42,7 +42,7 @@ public class DocenteService {
 
         List<DocenteEntity> docentes;
 
-        if ("pedagogico".equals(role) || "recruiter".equals(role)) {
+        if ("pedagogico".equals(role) || "recruiter".equals(role) || !"professor".equals(role)) {
             log.info("Todos os professores listados");
             docentes = repository.findByUsuario_Papel_Nome(PapelEnum.PROFESSOR);
             if (docentes.isEmpty()) {
@@ -65,13 +65,13 @@ public class DocenteService {
     public DocenteEntity buscarPorId(Long id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"recruiter".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"recruiter".equals(role) && !"professor".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Usuário não autorizado");
         }
         DocenteEntity docente = repository.findById(id).orElseThrow(() -> new NotFoundException("Nenhum docente com o ID passado foi encontrado"));
 
-        if ("pedagogico".equals(role) || "recruiter".equals(role)) {
+        if ("pedagogico".equals(role) || "recruiter".equals(role) || !"professor".equals(role)) {
             if (docente.getUsuario().getPapel().getNome() == PapelEnum.PROFESSOR) {
                 log.info("Professor com id {} encontrado", id);
                 return docente;
@@ -221,7 +221,7 @@ public class DocenteService {
     public DocenteEntity atualizar(AtualizarDocenteRequest atualizarDocenteRequest, Long id, String token) {
         String role = tokenService.buscaCampo(token, "scope");
 
-        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"recruiter".equals(role)) {
+        if (!"admin".equals(role) && !"pedagogico".equals(role) && !"recruiter".equals(role) && !"professor".equals(role)) {
             log.error("Usuário não autorizado: {}", role);
             throw new SecurityException("Tentativa de atualizar não autorizada");
         }
