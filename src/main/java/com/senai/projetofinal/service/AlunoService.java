@@ -1,12 +1,15 @@
 package com.senai.projetofinal.service;
 
+import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.AtualizarAlunoRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.InserirAlunoRequest;
 import com.senai.projetofinal.controller.dto.response.aluno.AlunoResponse;
 import com.senai.projetofinal.datasource.entity.AlunoEntity;
+import com.senai.projetofinal.datasource.entity.MateriaEntity;
 import com.senai.projetofinal.datasource.entity.TurmaEntity;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;
 import com.senai.projetofinal.datasource.repository.AlunoRepository;
+import com.senai.projetofinal.datasource.repository.MateriaRepository;
 import com.senai.projetofinal.datasource.repository.TurmaRepository;
 import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
@@ -26,12 +29,16 @@ public class AlunoService {
     private final TurmaRepository turmaRepository;
 
     private final TokenService tokenService;
+    private final MateriaRepository materiaRepository;
+    private final UsuarioService usuarioService;
 
-    public AlunoService(AlunoRepository repository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository, TokenService tokenService) {
+    public AlunoService(AlunoRepository repository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository, TokenService tokenService, MateriaRepository materiaRepository, UsuarioService usuarioService) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.turmaRepository = turmaRepository;
         this.tokenService = tokenService;
+        this.materiaRepository = materiaRepository;
+        this.usuarioService = usuarioService;
     }
 
     public List<AlunoEntity> listarTodos(String token) {
@@ -86,19 +93,6 @@ public class AlunoService {
             throw new IllegalArgumentException("Um aluno já existe com o nome passado");
         }
 
-        UsuarioEntity newAlunoUsuario = usuarioRepository.findById(inserirAlunoRequest.usuario())
-                .orElseThrow(() -> {
-                    log.error("Usuário não encontrado");
-                    return new RuntimeException("Usuário não encontrado");
-                });
-
-        String newAlunoPapel = newAlunoUsuario.getPapel().getNome().toString();
-
-        if (!"aluno".equals(newAlunoPapel)) {
-            log.error("Apenas um usuário com papel de aluno pode ser salvo como um aluno");
-            throw new IllegalArgumentException("Apenas um usuário com papel de aluno pode ser salvo como um aluno");
-        }
-
         TurmaEntity turma = turmaRepository.findById(inserirAlunoRequest.turma())
                 .orElseThrow(() -> {
                     log.error("Turma não encontrada");
@@ -106,12 +100,32 @@ public class AlunoService {
                 });
 
         AlunoEntity aluno = new AlunoEntity();
-        UsuarioEntity user = new UsuarioEntity();
-        user.setId(inserirAlunoRequest.usuario());
+
         aluno.setNome(inserirAlunoRequest.nome());
+        aluno.setEmail(inserirAlunoRequest.email());
+        aluno.setSenha(inserirAlunoRequest.senha());
         aluno.setDataNascimento(inserirAlunoRequest.dataNascimento());
-        aluno.setUsuario(user);
+        aluno.setGenero(inserirAlunoRequest.genero());
+        aluno.setCpf(inserirAlunoRequest.cpf());
+        aluno.setRg(inserirAlunoRequest.rg());
+        aluno.setEstadoCivil(inserirAlunoRequest.estadoCivil());
+        aluno.setTelefone(inserirAlunoRequest.telefone());
+        aluno.setNaturalidade(inserirAlunoRequest.naturalidade());
+        aluno.setCep(inserirAlunoRequest.cep());
+        aluno.setLogradouro(inserirAlunoRequest.logradouro());
+        aluno.setNumero(inserirAlunoRequest.numero());
+        aluno.setComplemento(inserirAlunoRequest.complemento());
+        aluno.setBairro(inserirAlunoRequest.bairro());
+        aluno.setPontoReferencia(inserirAlunoRequest.pontoReferencia());
         aluno.setTurma(turma);
+
+        UsuarioEntity user =  usuarioService.cadastraNovoLogin(new InserirLoginRequest(
+                inserirAlunoRequest.email(),
+                inserirAlunoRequest.senha(),
+                "Aluno"
+        ), token);
+
+        aluno.setUsuario(user);
 
         AlunoEntity alunoSalvo = repository.save(aluno);
 

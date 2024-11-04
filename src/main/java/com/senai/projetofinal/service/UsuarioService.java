@@ -25,7 +25,7 @@ public class UsuarioService {
     private final PapelRepository papelRepository;
     private final TokenService tokenService;
 
-    public void cadastraNovoLogin(
+    public UsuarioEntity cadastraNovoLogin(
             @RequestBody InserirLoginRequest inserirLoginRequest,
             @RequestHeader("Authorization") String token) {
 
@@ -65,6 +65,8 @@ public class UsuarioService {
         );
 
         usuarioRepository.save(usuario);
+
+        return usuario;
     }
 
     public UsuarioEntity buscarUsuarioPorId(Long id) {
