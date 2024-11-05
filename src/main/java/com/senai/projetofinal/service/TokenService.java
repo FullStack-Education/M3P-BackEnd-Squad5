@@ -7,11 +7,9 @@ import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -74,11 +72,21 @@ public class TokenService {
         return new LoginResponse(valorJWT, TEMPO_EXPIRACAO);
     }
 
+
+    public static Jwt getTokenJwt() {
+        return (Jwt) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
+    }
     public String buscaCampo(String token, String claim) {
         return jwtDecoder
                 .decode(token)
                 .getClaims()
                 .get(claim)
                 .toString();
+    }
+
+    public static Long getUserIdFromToken() {
+        return Long.valueOf(getTokenJwt().getSubject());
     }
 }

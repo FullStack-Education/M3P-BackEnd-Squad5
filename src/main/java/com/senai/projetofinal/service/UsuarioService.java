@@ -71,4 +71,8 @@ public class UsuarioService {
     public UsuarioEntity buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
     }
+
+    public UsuarioEntity buscarUsuarioPorToken(){
+        return this.buscarUsuarioPorId(TokenService.getUserIdFromToken());
+    }
 }
