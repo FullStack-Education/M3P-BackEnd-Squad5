@@ -2,7 +2,7 @@ package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.aluno.AtualizarAlunoRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.InserirAlunoRequest;
-import com.senai.projetofinal.controller.dto.response.aluno.AlunoResponse;
+import com.senai.projetofinal.controller.dto.response.AlunoResponse;
 import com.senai.projetofinal.datasource.entity.AlunoEntity;
 import com.senai.projetofinal.datasource.entity.PapelEntity;
 import com.senai.projetofinal.datasource.entity.PapelEnum;
@@ -69,7 +69,7 @@ class AlunoServiceTest {
     void salvarAluno() {
         // given
         String token = "mock-token";
-        InserirAlunoRequest request = new InserirAlunoRequest("Aluno Teste", "2000-01-01", 1L, 1L);
+        InserirAlunoRequest request = new InserirAlunoRequest("Aluno Teste", "2000-01-01", "","","","","","","","","","","","","","","","",1L, 1L);
         when(tokenService.buscaCampo(token, "scope")).thenReturn("admin");
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(aluno.getUsuario()));
         when(turmaRepository.findById(1L)).thenReturn(Optional.of(new TurmaEntity()));
@@ -121,7 +121,7 @@ class AlunoServiceTest {
         // given
         String token = "mock-token";
         Long alunoId = 1L;
-        AtualizarAlunoRequest request = new AtualizarAlunoRequest("Aluno Atualizado", "2000-01-01", 1L);
+        AtualizarAlunoRequest request = new AtualizarAlunoRequest("Aluno Atualizado", "2000-01-01", "","","","","","","","","","","","","","","","",1L);
         when(tokenService.buscaCampo(token, "scope")).thenReturn("admin");
         when(alunoRepository.findById(alunoId)).thenReturn(Optional.of(aluno));
         when(turmaRepository.findById(1L)).thenReturn(Optional.of(new TurmaEntity()));
