@@ -5,25 +5,28 @@ import com.senai.projetofinal.controller.dto.request.aluno.AtualizarAlunoRequest
 import com.senai.projetofinal.controller.dto.request.aluno.InserirAlunoRequest;
 import com.senai.projetofinal.controller.dto.response.aluno.AlunoResponse;
 import com.senai.projetofinal.datasource.entity.AlunoEntity;
-import com.senai.projetofinal.datasource.entity.MateriaEntity;
 import com.senai.projetofinal.datasource.entity.TurmaEntity;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;
 import com.senai.projetofinal.datasource.repository.AlunoRepository;
-import com.senai.projetofinal.datasource.repository.MateriaRepository;
 import com.senai.projetofinal.datasource.repository.TurmaRepository;
 import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+
+@AllArgsConstructor
 @Service
 @Slf4j
 public class AlunoService {
 
     private final AlunoRepository repository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final UsuarioRepository usuarioRepository;
 
@@ -32,14 +35,6 @@ public class AlunoService {
     private final TokenService tokenService;
 
     private final UsuarioService usuarioService;
-
-    public AlunoService(AlunoRepository repository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository, TokenService tokenService, UsuarioService usuarioService) {
-        this.repository = repository;
-        this.usuarioRepository = usuarioRepository;
-        this.turmaRepository = turmaRepository;
-        this.tokenService = tokenService;
-        this.usuarioService = usuarioService;
-    }
 
     public List<AlunoEntity> listarTodos(String token) {
         String role = tokenService.buscaCampo(token, "scope");
@@ -103,7 +98,7 @@ public class AlunoService {
 
         aluno.setNome(inserirAlunoRequest.nome());
         aluno.setEmail(inserirAlunoRequest.email());
-        aluno.setSenha(inserirAlunoRequest.senha());
+        aluno.setSenha(bCryptPasswordEncoder.encode(inserirAlunoRequest.senha()));
         aluno.setDataNascimento(inserirAlunoRequest.dataNascimento());
         aluno.setGenero(inserirAlunoRequest.genero());
         aluno.setCpf(inserirAlunoRequest.cpf());
@@ -189,7 +184,7 @@ public class AlunoService {
 
         entity.setNome(atualizarAlunoRequest.nome());
         entity.setEmail(atualizarAlunoRequest.email());
-        entity.setSenha(atualizarAlunoRequest.senha());
+        entity.setSenha(bCryptPasswordEncoder.encode(atualizarAlunoRequest.senha()));
         entity.setDataNascimento(atualizarAlunoRequest.dataNascimento());
         entity.setGenero(atualizarAlunoRequest.genero());
         entity.setCpf(atualizarAlunoRequest.cpf());
@@ -206,6 +201,13 @@ public class AlunoService {
         entity.setBairro(atualizarAlunoRequest.bairro());
         entity.setPontoReferencia(atualizarAlunoRequest.pontoReferencia());
         entity.setTurma(turma);
+
+        AlunoEntity aluno = buscarPorId(id, token);
+        UsuarioEntity user = aluno.getUsuario();
+
+        user.setLogin(atualizarAlunoRequest.email());
+        user.setSenha(bCryptPasswordEncoder.encode(atualizarAlunoRequest.senha()));
+        usuarioRepository.save(user);
 
 
         return repository.save(entity);
