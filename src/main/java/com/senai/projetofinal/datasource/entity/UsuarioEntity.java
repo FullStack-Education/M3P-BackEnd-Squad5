@@ -14,10 +14,16 @@ public class UsuarioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String nome;
+
     @Column(unique = true)
     private String login;
 
+    @Column(unique = true)
+    private String email;
+
     private String senha;
+
 
     @ManyToOne
     private PapelEntity papel;

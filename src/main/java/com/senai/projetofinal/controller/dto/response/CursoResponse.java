@@ -1,4 +1,4 @@
-package com.senai.projetofinal.controller.dto.response.curso;
+package com.senai.projetofinal.controller.dto.response;
 
 public record CursoResponse(
         Long id,

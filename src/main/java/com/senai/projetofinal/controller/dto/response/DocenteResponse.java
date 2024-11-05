@@ -1,4 +1,4 @@
-package com.senai.projetofinal.controller.dto.response.docente;
+package com.senai.projetofinal.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

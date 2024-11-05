@@ -2,7 +2,7 @@ package com.senai.projetofinal.controller;
 
 import com.senai.projetofinal.controller.dto.request.aluno.AtualizarAlunoRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.InserirAlunoRequest;
-import com.senai.projetofinal.controller.dto.response.aluno.AlunoResponse;
+import com.senai.projetofinal.controller.dto.response.AlunoResponse;
 import com.senai.projetofinal.datasource.entity.AlunoEntity;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
 import com.senai.projetofinal.service.AlunoService;

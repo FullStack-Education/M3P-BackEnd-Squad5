@@ -1,4 +1,4 @@
-package com.senai.projetofinal.controller.dto.response.dashboard;
+package com.senai.projetofinal.controller.dto.response;
 
 public record DashboardResponse(
         long totalAlunos,

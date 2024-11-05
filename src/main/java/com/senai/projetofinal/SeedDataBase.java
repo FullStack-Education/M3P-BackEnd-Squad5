@@ -37,6 +37,8 @@ class SeedDatabase {
             if (usuarioRepository.count() == 0) {
                 UsuarioEntity admin = new UsuarioEntity();
                 admin.setLogin("admin");
+                admin.setNome("Administrador");
+                admin.setEmail("admin@school.com");
                 admin.setSenha(bCryptPasswordEncoder.encode("1234"));
                 PapelEntity adminPapel = papelRepository.findByNome(PapelEnum.ADMIN).orElseThrow();
                 admin.setPapel(adminPapel);
@@ -44,6 +46,8 @@ class SeedDatabase {
 
                 UsuarioEntity pedagogico = new UsuarioEntity();
                 pedagogico.setLogin("pedagogico");
+                pedagogico.setNome("Docente Pedagógico");
+                pedagogico.setEmail("pedagogico@school.com");
                 pedagogico.setSenha(bCryptPasswordEncoder.encode("1234"));
                 PapelEntity pedagogigoPapel = papelRepository.findByNome(PapelEnum.PEDAGOGICO).orElseThrow();
                 pedagogico.setPapel(pedagogigoPapel);
@@ -51,6 +55,8 @@ class SeedDatabase {
 
                 UsuarioEntity recruiter = new UsuarioEntity();
                 recruiter.setLogin("recruiter");
+                recruiter.setNome("Docente Recrutador");
+                recruiter.setEmail("recruiter@school.com");
                 recruiter.setSenha(bCryptPasswordEncoder.encode("1234"));
                 PapelEntity recruiterPapel = papelRepository.findByNome(PapelEnum.RECRUITER).orElseThrow();
                 recruiter.setPapel(recruiterPapel);
@@ -58,6 +64,8 @@ class SeedDatabase {
 
                 UsuarioEntity professor = new UsuarioEntity();
                 professor.setLogin("professor");
+                professor.setNome("Docente Professor");
+                professor.setEmail("professor@school.com");
                 professor.setSenha(bCryptPasswordEncoder.encode("1234"));
                 PapelEntity professorPapel = papelRepository.findByNome(PapelEnum.PROFESSOR).orElseThrow();
                 professor.setPapel(professorPapel);
@@ -65,6 +73,8 @@ class SeedDatabase {
 
                 UsuarioEntity aluno = new UsuarioEntity();
                 aluno.setLogin("aluno");
+                aluno.setNome("Aluno");
+                aluno.setEmail("aluno@school.com");
                 aluno.setSenha(bCryptPasswordEncoder.encode("1234"));
                 PapelEntity alunoPapel = papelRepository.findByNome(PapelEnum.ALUNO).orElseThrow();
                 aluno.setPapel(alunoPapel);

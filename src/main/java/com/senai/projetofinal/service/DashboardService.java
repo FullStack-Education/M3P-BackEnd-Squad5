@@ -1,6 +1,6 @@
 package com.senai.projetofinal.service;
 
-import com.senai.projetofinal.controller.dto.response.dashboard.DashboardResponse;
+import com.senai.projetofinal.controller.dto.response.DashboardResponse;
 import com.senai.projetofinal.datasource.repository.AlunoRepository;
 import com.senai.projetofinal.datasource.repository.DocenteRepository;
 import com.senai.projetofinal.datasource.repository.TurmaRepository;
