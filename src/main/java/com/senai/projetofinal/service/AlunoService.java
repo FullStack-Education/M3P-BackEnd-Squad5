@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -29,15 +30,14 @@ public class AlunoService {
     private final TurmaRepository turmaRepository;
 
     private final TokenService tokenService;
-    private final MateriaRepository materiaRepository;
+
     private final UsuarioService usuarioService;
 
-    public AlunoService(AlunoRepository repository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository, TokenService tokenService, MateriaRepository materiaRepository, UsuarioService usuarioService) {
+    public AlunoService(AlunoRepository repository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository, TokenService tokenService, UsuarioService usuarioService) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.turmaRepository = turmaRepository;
         this.tokenService = tokenService;
-        this.materiaRepository = materiaRepository;
         this.usuarioService = usuarioService;
     }
 
@@ -154,8 +154,14 @@ public class AlunoService {
             throw new NotFoundException("Nenhum aluno encontrado com o id passado");
         }
 
+        AlunoEntity aluno = buscarPorId(id, token);
+        UsuarioEntity user = aluno.getUsuario();
+
+
+
         log.info("Removendo aluno com id {}", id);
         repository.deleteById(id);
+        usuarioRepository.deleteById(user.getId());
     }
 
     public AlunoEntity atualizar(AtualizarAlunoRequest atualizarAlunoRequest, Long id, String token) {
@@ -200,6 +206,7 @@ public class AlunoService {
         entity.setBairro(atualizarAlunoRequest.bairro());
         entity.setPontoReferencia(atualizarAlunoRequest.pontoReferencia());
         entity.setTurma(turma);
+
 
         return repository.save(entity);
     }
