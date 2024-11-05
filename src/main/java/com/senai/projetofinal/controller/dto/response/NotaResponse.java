@@ -1,4 +1,4 @@
-package com.senai.projetofinal.controller.dto.response.nota;
+package com.senai.projetofinal.controller.dto.response;
 
 import com.senai.projetofinal.datasource.entity.AlunoEntity;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;

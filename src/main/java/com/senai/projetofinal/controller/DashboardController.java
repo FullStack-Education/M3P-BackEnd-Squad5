@@ -1,6 +1,6 @@
 package com.senai.projetofinal.controller;
 
-import com.senai.projetofinal.controller.dto.response.dashboard.DashboardResponse;
+import com.senai.projetofinal.controller.dto.response.DashboardResponse;
 import com.senai.projetofinal.service.DashboardService;
 import com.senai.projetofinal.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;

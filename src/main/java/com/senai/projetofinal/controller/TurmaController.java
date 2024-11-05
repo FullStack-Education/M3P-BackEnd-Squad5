@@ -2,7 +2,7 @@ package com.senai.projetofinal.controller;
 
 import com.senai.projetofinal.controller.dto.request.turma.AtualizarTurmaRequest;
 import com.senai.projetofinal.controller.dto.request.turma.InserirTurmaRequest;
-import com.senai.projetofinal.controller.dto.response.turma.TurmaResponse;
+import com.senai.projetofinal.controller.dto.response.TurmaResponse;
 import com.senai.projetofinal.datasource.entity.TurmaEntity;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
 import com.senai.projetofinal.service.TurmaService;
