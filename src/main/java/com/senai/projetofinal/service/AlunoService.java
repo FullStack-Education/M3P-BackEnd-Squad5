@@ -1,5 +1,6 @@
 package com.senai.projetofinal.service;
 
+import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.AtualizarAlunoRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.InserirAlunoRequest;
 import com.senai.projetofinal.controller.dto.response.AlunoResponse;
@@ -10,16 +11,22 @@ import com.senai.projetofinal.datasource.repository.AlunoRepository;
 import com.senai.projetofinal.datasource.repository.TurmaRepository;
 import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+@AllArgsConstructor
 @Service
 @Slf4j
 public class AlunoService {
 
     private final AlunoRepository repository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final UsuarioRepository usuarioRepository;
 
@@ -27,12 +34,7 @@ public class AlunoService {
 
     private final TokenService tokenService;
 
-    public AlunoService(AlunoRepository repository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository, TokenService tokenService) {
-        this.repository = repository;
-        this.usuarioRepository = usuarioRepository;
-        this.turmaRepository = turmaRepository;
-        this.tokenService = tokenService;
-    }
+    private final UsuarioService usuarioService;
 
     public List<AlunoEntity> listarTodos(String token) {
         String role = tokenService.buscaCampo(token, "scope");
@@ -86,19 +88,6 @@ public class AlunoService {
             throw new IllegalArgumentException("Um aluno já existe com o nome passado");
         }
 
-        UsuarioEntity newAlunoUsuario = usuarioRepository.findById(inserirAlunoRequest.usuario())
-                .orElseThrow(() -> {
-                    log.error("Usuário não encontrado");
-                    return new RuntimeException("Usuário não encontrado");
-                });
-
-        String newAlunoPapel = newAlunoUsuario.getPapel().getNome().toString();
-
-        if (!"aluno".equals(newAlunoPapel)) {
-            log.error("Apenas um usuário com papel de aluno pode ser salvo como um aluno");
-            throw new IllegalArgumentException("Apenas um usuário com papel de aluno pode ser salvo como um aluno");
-        }
-
         TurmaEntity turma = turmaRepository.findById(inserirAlunoRequest.turma())
                 .orElseThrow(() -> {
                     log.error("Turma não encontrada");
@@ -106,12 +95,34 @@ public class AlunoService {
                 });
 
         AlunoEntity aluno = new AlunoEntity();
-        UsuarioEntity user = new UsuarioEntity();
-        user.setId(inserirAlunoRequest.usuario());
+
         aluno.setNome(inserirAlunoRequest.nome());
+        aluno.setEmail(inserirAlunoRequest.email());
+        aluno.setSenha(bCryptPasswordEncoder.encode(inserirAlunoRequest.senha()));
         aluno.setDataNascimento(inserirAlunoRequest.dataNascimento());
-        aluno.setUsuario(user);
+        aluno.setGenero(inserirAlunoRequest.genero());
+        aluno.setCpf(inserirAlunoRequest.cpf());
+        aluno.setRg(inserirAlunoRequest.rg());
+        aluno.setEstadoCivil(inserirAlunoRequest.estadoCivil());
+        aluno.setTelefone(inserirAlunoRequest.telefone());
+        aluno.setNaturalidade(inserirAlunoRequest.naturalidade());
+        aluno.setCep(inserirAlunoRequest.cep());
+        aluno.setCidade(inserirAlunoRequest.cidade());
+        aluno.setEstado(inserirAlunoRequest.estado());
+        aluno.setLogradouro(inserirAlunoRequest.logradouro());
+        aluno.setNumero(inserirAlunoRequest.numero());
+        aluno.setComplemento(inserirAlunoRequest.complemento());
+        aluno.setBairro(inserirAlunoRequest.bairro());
+        aluno.setPontoReferencia(inserirAlunoRequest.pontoReferencia());
         aluno.setTurma(turma);
+
+        UsuarioEntity user =  usuarioService.cadastraNovoLogin(new InserirLoginRequest(
+                inserirAlunoRequest.email(),
+                inserirAlunoRequest.senha(),
+                "Aluno"
+        ), token);
+
+        aluno.setUsuario(user);
 
         AlunoEntity alunoSalvo = repository.save(aluno);
 
@@ -138,8 +149,14 @@ public class AlunoService {
             throw new NotFoundException("Nenhum aluno encontrado com o id passado");
         }
 
+        AlunoEntity aluno = buscarPorId(id, token);
+        UsuarioEntity user = aluno.getUsuario();
+
+
+
         log.info("Removendo aluno com id {}", id);
         repository.deleteById(id);
+        usuarioRepository.deleteById(user.getId());
     }
 
     public AlunoEntity atualizar(AtualizarAlunoRequest atualizarAlunoRequest, Long id, String token) {
@@ -157,11 +174,6 @@ public class AlunoService {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
-        if (repository.existsByNome(atualizarAlunoRequest.nome())) {
-            log.error("Um aluno já existe com o nome: {}", atualizarAlunoRequest.nome());
-            throw new IllegalArgumentException("Um aluno já existe com o nome passado");
-        }
-
         TurmaEntity turma = turmaRepository.findById(atualizarAlunoRequest.turma())
                 .orElseThrow(() -> {
                     log.error("Turma não encontrada");
@@ -169,9 +181,35 @@ public class AlunoService {
                 });
 
         log.info("Atualizando aluno com o id {}", id);
+
         entity.setNome(atualizarAlunoRequest.nome());
+        entity.setEmail(atualizarAlunoRequest.email());
+        entity.setSenha(bCryptPasswordEncoder.encode(atualizarAlunoRequest.senha()));
         entity.setDataNascimento(atualizarAlunoRequest.dataNascimento());
+        entity.setGenero(atualizarAlunoRequest.genero());
+        entity.setCpf(atualizarAlunoRequest.cpf());
+        entity.setRg(atualizarAlunoRequest.rg());
+        entity.setEstadoCivil(atualizarAlunoRequest.estadoCivil());
+        entity.setTelefone(atualizarAlunoRequest.telefone());
+        entity.setNaturalidade(atualizarAlunoRequest.naturalidade());
+        entity.setCep(atualizarAlunoRequest.cep());
+        entity.setCidade(atualizarAlunoRequest.cidade());
+        entity.setEstado(atualizarAlunoRequest.estado());
+        entity.setLogradouro(atualizarAlunoRequest.logradouro());
+        entity.setNumero(atualizarAlunoRequest.numero());
+        entity.setComplemento(atualizarAlunoRequest.complemento());
+        entity.setBairro(atualizarAlunoRequest.bairro());
+        entity.setPontoReferencia(atualizarAlunoRequest.pontoReferencia());
         entity.setTurma(turma);
+
+        AlunoEntity aluno = buscarPorId(id, token);
+        UsuarioEntity user = aluno.getUsuario();
+
+        user.setLogin(atualizarAlunoRequest.email());
+        user.setSenha(bCryptPasswordEncoder.encode(atualizarAlunoRequest.senha()));
+        usuarioRepository.save(user);
+
+
         return repository.save(entity);
     }
 }
