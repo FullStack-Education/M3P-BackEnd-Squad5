@@ -193,8 +193,14 @@ public class DocenteService {
             throw new NotFoundException("Nenhum docente encontrado com o id passado");
         }
 
+        DocenteEntity docente = buscarPorId(id, token);
+        UsuarioEntity user = docente.getUsuario();
+
+
         log.info("Removendo docente com o id {}", id);
         repository.deleteById(id);
+        log.info("Removendo usuario vinculado ao docente com o id {}", id);
+        usuarioRepository.deleteById(user.getId());
     }
 
     public DocenteEntity atualizar(AtualizarDocenteRequest atualizarDocenteRequest, Long id, String token) {
@@ -233,7 +239,6 @@ public class DocenteService {
         entity.setEstadoCivil(atualizarDocenteRequest.estadoCivil());
         entity.setTelefone(atualizarDocenteRequest.telefone());
         entity.setEmail(atualizarDocenteRequest.email());
-        entity.setSenha(atualizarDocenteRequest.senha());
         entity.setNaturalidade(atualizarDocenteRequest.naturalidade());
         entity.setCep(atualizarDocenteRequest.cep());
         entity.setCidade(atualizarDocenteRequest.cidade());
