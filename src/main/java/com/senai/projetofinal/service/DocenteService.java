@@ -119,41 +119,22 @@ public class DocenteService {
         }
 
 
-        UsuarioEntity newDocenteUsuario = usuarioRepository.findById(inserirDocenteRequest.usuario())
-                .orElseGet(() -> {
-                            log.warn("Usuário não encontrado com o id: {}. Criando um novo usuário.", inserirDocenteRequest.usuario());
+        log.info("Criando um novo usuário.");
+
+        UsuarioEntity user = usuarioService.cadastraNovoLogin(new InserirLoginRequest(
+                inserirDocenteRequest.email(),
+                inserirDocenteRequest.senha(),
+                "professor"
+        ), token);
 
 
-                            // Criar um request padrão para o novo login
-                            InserirLoginRequest inserirLoginRequest = new InserirLoginRequest(
-                                    inserirDocenteRequest.email(),
-                                    inserirDocenteRequest.senha(),
-                                    "professor"
-                            );
-
-                            usuarioService.cadastraNovoLogin(inserirLoginRequest, token);
-
-
-                            return usuarioRepository.findByLogin(inserirDocenteRequest.email())
-                                    .orElseThrow(() -> new RuntimeException("Falha ao criar novo usuário"));
-
-                });
-        String newDocentePapel = newDocenteUsuario.getPapel().getNome().toString();
-
-
-        if (("pedagogico".equals(role) || "recruiter".equals(role)) && !"professor".equals(newDocentePapel)) {
+        if (("pedagogico".equals(role) || "recruiter".equals(role))) {
             log.error("Usuário pedagogico ou recruiter só pode salvar um docente com o papel professor");
             throw new SecurityException("Usuário pedagogico ou recruiter só pode salvar um docente com o papel professor");
         }
 
-        if (repository.existsByUsuarioId(inserirDocenteRequest.usuario())) {
-            log.debug("Um docente já existe com o Id de usuário: {}", inserirDocenteRequest.usuario());
-            throw new RuntimeException("Um docente já existe com o Id de usuário passado");
-        }
 
         DocenteEntity docente = new DocenteEntity();
-        UsuarioEntity user = new UsuarioEntity();
-        user.setId(newDocenteUsuario.getId());
         docente.setUsuario(user);
         docente.setNome(inserirDocenteRequest.nome());
         docente.setDataNascimento(inserirDocenteRequest.dataNascimento());
@@ -163,7 +144,6 @@ public class DocenteService {
         docente.setEstadoCivil(inserirDocenteRequest.estadoCivil());
         docente.setTelefone(inserirDocenteRequest.telefone());
         docente.setEmail(inserirDocenteRequest.email());
-        docente.setSenha(inserirDocenteRequest.senha());
         docente.setNaturalidade(inserirDocenteRequest.naturalidade());
         docente.setCep(inserirDocenteRequest.cep());
         docente.setCidade(inserirDocenteRequest.cidade());

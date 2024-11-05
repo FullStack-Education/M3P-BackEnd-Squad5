@@ -25,7 +25,8 @@ public class DocenteEntity {
     private LocalDate dataNascimento;
 
     private String genero;
-    //TODO: Se der tempo, acrescentar validação de notNull
+
+    @Column(nullable = false)
     private String cpf;
 
     @Size(max = 20)
@@ -39,7 +40,7 @@ public class DocenteEntity {
     private String email;
 
     @Size(min = 8)
-    private String senha;  // TODO: A senha deve ser criptografada ao salvar
+    private String senha;
 
     @Size(min = 8, max = 64)
     private String naturalidade;  // Local de nascimento
