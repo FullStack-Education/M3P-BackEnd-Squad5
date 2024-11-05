@@ -4,7 +4,6 @@ import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteRequest;
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
 import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
-import com.senai.projetofinal.datasource.entity.AlunoEntity;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
 import com.senai.projetofinal.datasource.entity.PapelEnum;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;
@@ -13,7 +12,6 @@ import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

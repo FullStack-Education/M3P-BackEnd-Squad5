@@ -2,11 +2,10 @@ package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.turma.AtualizarTurmaRequest;
 import com.senai.projetofinal.controller.dto.request.turma.InserirTurmaRequest;
-import com.senai.projetofinal.controller.dto.response.turma.TurmaResponse;
+import com.senai.projetofinal.controller.dto.response.TurmaResponse;
 import com.senai.projetofinal.datasource.entity.CursoEntity;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
 import com.senai.projetofinal.datasource.entity.TurmaEntity;
-import com.senai.projetofinal.datasource.entity.UsuarioEntity;
 import com.senai.projetofinal.datasource.repository.CursoRepository;
 import com.senai.projetofinal.datasource.repository.DocenteRepository;
 import com.senai.projetofinal.datasource.repository.TurmaRepository;

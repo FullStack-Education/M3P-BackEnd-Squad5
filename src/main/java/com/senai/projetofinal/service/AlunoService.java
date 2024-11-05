@@ -3,7 +3,7 @@ package com.senai.projetofinal.service;
 import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.AtualizarAlunoRequest;
 import com.senai.projetofinal.controller.dto.request.aluno.InserirAlunoRequest;
-import com.senai.projetofinal.controller.dto.response.aluno.AlunoResponse;
+import com.senai.projetofinal.controller.dto.response.AlunoResponse;
 import com.senai.projetofinal.datasource.entity.AlunoEntity;
 import com.senai.projetofinal.datasource.entity.TurmaEntity;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;

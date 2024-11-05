@@ -2,8 +2,8 @@ package com.senai.projetofinal.controller;
 
 import com.senai.projetofinal.controller.dto.request.nota.AtualizarNotaRequest;
 import com.senai.projetofinal.controller.dto.request.nota.InserirNotaRequest;
-import com.senai.projetofinal.controller.dto.response.curso.CursoResponse;
-import com.senai.projetofinal.controller.dto.response.nota.NotaResponse;
+import com.senai.projetofinal.controller.dto.response.CursoResponse;
+import com.senai.projetofinal.controller.dto.response.NotaResponse;
 import com.senai.projetofinal.datasource.entity.NotaEntity;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
 import com.senai.projetofinal.infra.exception.error.SecurityException;

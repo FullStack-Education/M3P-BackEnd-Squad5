@@ -1,4 +1,4 @@
-package com.senai.projetofinal.controller.dto.response.aluno;
+package com.senai.projetofinal.controller.dto.response;
 
 import com.senai.projetofinal.datasource.entity.TurmaEntity;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;

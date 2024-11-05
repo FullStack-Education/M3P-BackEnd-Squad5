@@ -2,7 +2,7 @@ package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.nota.AtualizarNotaRequest;
 import com.senai.projetofinal.controller.dto.request.nota.InserirNotaRequest;
-import com.senai.projetofinal.controller.dto.response.nota.NotaResponse;
+import com.senai.projetofinal.controller.dto.response.NotaResponse;
 import com.senai.projetofinal.datasource.entity.*;
 import com.senai.projetofinal.datasource.repository.*;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;

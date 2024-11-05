@@ -32,16 +32,6 @@ public class TokenService {
     public LoginResponse gerarToken(
             @RequestBody LoginRequest loginRequest
     ){
-        UsuarioEntity usuarioEntity = usuarioRepository
-                .findByLogin(loginRequest.login())
-                .orElseThrow(
-                        () ->{
-                            log.error("Usuário incorreto");
-                            return new BadCredentialsException("Usuário incorreto");
-                        }
-                );
-
-
         if (loginRequest.login() == null || loginRequest.login().isBlank()) {
             throw new IllegalArgumentException("Login não pode ser nulo ou vazio");
         }
@@ -49,6 +39,15 @@ public class TokenService {
         if (loginRequest.senha() == null || loginRequest.senha().isBlank()) {
             throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
         }
+
+        UsuarioEntity usuarioEntity = usuarioRepository
+                .findByLoginOrEmail(loginRequest.login(),loginRequest.login())
+                .orElseThrow(
+                        () ->{
+                            log.error("Usuário incorreto");
+                            return new BadCredentialsException("Usuário incorreto");
+                        }
+                );
 
         if (!usuarioEntity.senhaValida(loginRequest, bCryptPasswordEncoder)){
             log.error("Senha incorreta");
