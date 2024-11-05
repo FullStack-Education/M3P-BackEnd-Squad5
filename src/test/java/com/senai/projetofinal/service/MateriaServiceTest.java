@@ -2,7 +2,7 @@ package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.materia.AtualizarMateriaRequest;
 import com.senai.projetofinal.controller.dto.request.materia.InserirMateriaRequest;
-import com.senai.projetofinal.controller.dto.response.materia.MateriaResponse;
+import com.senai.projetofinal.controller.dto.response.MateriaResponse;
 import com.senai.projetofinal.datasource.entity.CursoEntity;
 import com.senai.projetofinal.datasource.entity.MateriaEntity;
 import com.senai.projetofinal.datasource.repository.CursoRepository;

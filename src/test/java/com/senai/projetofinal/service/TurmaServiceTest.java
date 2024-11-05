@@ -1,7 +1,7 @@
 package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.turma.InserirTurmaRequest;
-import com.senai.projetofinal.controller.dto.response.turma.TurmaResponse;
+import com.senai.projetofinal.controller.dto.response.TurmaResponse;
 import com.senai.projetofinal.datasource.entity.*;
 import com.senai.projetofinal.datasource.repository.CursoRepository;
 import com.senai.projetofinal.datasource.repository.DocenteRepository;

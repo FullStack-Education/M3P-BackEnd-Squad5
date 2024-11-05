@@ -1,7 +1,7 @@
 package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.curso.InserirCursoRequest;
-import com.senai.projetofinal.controller.dto.response.curso.CursoResponse;
+import com.senai.projetofinal.controller.dto.response.CursoResponse;
 import com.senai.projetofinal.datasource.entity.CursoEntity;
 import com.senai.projetofinal.datasource.repository.CursoRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;

@@ -2,7 +2,7 @@ package com.senai.projetofinal.service;
 
 import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteRequest;
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
-import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
+import com.senai.projetofinal.controller.dto.response.DocenteResponse;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
 import com.senai.projetofinal.datasource.entity.PapelEntity;
 import com.senai.projetofinal.datasource.entity.PapelEnum;

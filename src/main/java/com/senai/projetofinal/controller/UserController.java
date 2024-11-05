@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Usuários")
-@RequestMapping(value = "usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "usuarios")
 public class UserController {
     private final UsuarioService service;
 
@@ -40,6 +40,17 @@ public class UserController {
     public ResponseEntity<?> buscarPorId(@PathVariable Long id,@RequestHeader("Authorization") String token) {
         try {
             UsuarioEntity entity = service.buscarUsuarioPorId(id);
+            return UsuarioResponse.toResponseEntity(entity);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/token")
+    public ResponseEntity<?> buscarPorId(@RequestHeader("Authorization") String token) {
+        try {
+            UsuarioEntity entity = service.buscarUsuarioPorToken();
             return UsuarioResponse.toResponseEntity(entity);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
