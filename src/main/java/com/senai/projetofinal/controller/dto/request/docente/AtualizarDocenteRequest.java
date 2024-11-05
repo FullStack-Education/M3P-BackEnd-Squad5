@@ -19,7 +19,7 @@ public record AtualizarDocenteRequest(
 
         @JsonSerialize(using = LocalDateSerializer.class)
         @JsonDeserialize(using = LocalDateDeserializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyy-MM-dd")
         LocalDate dataNascimento,
 
         String genero,

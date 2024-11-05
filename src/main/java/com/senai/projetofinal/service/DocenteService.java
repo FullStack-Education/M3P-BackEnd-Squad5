@@ -4,33 +4,32 @@ import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteRequest;
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
 import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
+import com.senai.projetofinal.datasource.entity.AlunoEntity;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
 import com.senai.projetofinal.datasource.entity.PapelEnum;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;
 import com.senai.projetofinal.datasource.repository.DocenteRepository;
 import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+@AllArgsConstructor
 @Service
 @Slf4j
 public class DocenteService {
 
     private final DocenteRepository repository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UsuarioRepository usuarioRepository;
     private final TokenService tokenService;
     private final UsuarioService usuarioService;
 
-    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, TokenService tokenService, UsuarioService usuarioService) {
-        this.repository = docenteRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.tokenService = tokenService;
-        this.usuarioService = usuarioService;
-    }
 
     public List<DocenteEntity> listarTodos(String token) {
         String role = tokenService.buscaCampo(token, "scope");
@@ -213,19 +212,9 @@ public class DocenteService {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
-        if (repository.existsByNome(atualizarDocenteRequest.nome())) {
-            log.error("Um docente já existe com o nome: {}", atualizarDocenteRequest.nome());
-            throw new IllegalArgumentException("Um docente já existe com o nome passado");
-        }
-
         if (atualizarDocenteRequest.email() == null || atualizarDocenteRequest.email().isBlank()) {
             log.error("Email não pode ser nulo ou vazio");
             throw new IllegalArgumentException("Email não pode ser nulo ou vazio");
-        }
-
-        if (repository.existsByEmail(atualizarDocenteRequest.nome())) {
-            log.error("Um docente já existe com o email: {}", atualizarDocenteRequest.email());
-            throw new IllegalArgumentException("Um docente já existe com o email passado");
         }
 
         if (atualizarDocenteRequest.senha() == null || atualizarDocenteRequest.senha().isBlank()) {
@@ -255,6 +244,15 @@ public class DocenteService {
         entity.setBairro(atualizarDocenteRequest.bairro());
         entity.setPontoReferencia(atualizarDocenteRequest.pontoReferencia());
         entity.setMaterias(atualizarDocenteRequest.materias());
+
+        DocenteEntity docente = buscarPorId(id, token);
+        UsuarioEntity user = docente.getUsuario();
+
+        user.setLogin(atualizarDocenteRequest.email());
+        user.setSenha(bCryptPasswordEncoder.encode(atualizarDocenteRequest.senha()));
+        usuarioRepository.save(user);
+
+
         return repository.save(entity);
     }
 }
