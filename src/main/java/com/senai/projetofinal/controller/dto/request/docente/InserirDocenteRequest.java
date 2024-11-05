@@ -20,7 +20,7 @@ public record InserirDocenteRequest(
 
         @JsonSerialize(using = LocalDateSerializer.class)
         @JsonDeserialize(using = LocalDateDeserializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate dataNascimento,
 
         String genero,

@@ -3,33 +3,31 @@ package com.senai.projetofinal.service;
 import com.senai.projetofinal.controller.dto.request.InserirLoginRequest;
 import com.senai.projetofinal.controller.dto.request.docente.AtualizarDocenteRequest;
 import com.senai.projetofinal.controller.dto.request.docente.InserirDocenteRequest;
-import com.senai.projetofinal.controller.dto.response.DocenteResponse;
+import com.senai.projetofinal.controller.dto.response.docente.DocenteResponse;
 import com.senai.projetofinal.datasource.entity.DocenteEntity;
 import com.senai.projetofinal.datasource.entity.PapelEnum;
 import com.senai.projetofinal.datasource.entity.UsuarioEntity;
 import com.senai.projetofinal.datasource.repository.DocenteRepository;
 import com.senai.projetofinal.datasource.repository.UsuarioRepository;
 import com.senai.projetofinal.infra.exception.error.NotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+@AllArgsConstructor
 @Service
 @Slf4j
 public class DocenteService {
 
     private final DocenteRepository repository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UsuarioRepository usuarioRepository;
     private final TokenService tokenService;
     private final UsuarioService usuarioService;
 
-    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, TokenService tokenService, UsuarioService usuarioService) {
-        this.repository = docenteRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.tokenService = tokenService;
-        this.usuarioService = usuarioService;
-    }
 
     public List<DocenteEntity> listarTodos(String token) {
         String role = tokenService.buscaCampo(token, "scope");
@@ -118,41 +116,22 @@ public class DocenteService {
         }
 
 
-        UsuarioEntity newDocenteUsuario = usuarioRepository.findById(inserirDocenteRequest.usuario())
-                .orElseGet(() -> {
-                            log.warn("Usuário não encontrado com o id: {}. Criando um novo usuário.", inserirDocenteRequest.usuario());
+        log.info("Criando um novo usuário.");
+
+        UsuarioEntity user = usuarioService.cadastraNovoLogin(new InserirLoginRequest(
+                inserirDocenteRequest.email(),
+                inserirDocenteRequest.senha(),
+                "professor"
+        ), token);
 
 
-                            // Criar um request padrão para o novo login
-                            InserirLoginRequest inserirLoginRequest = new InserirLoginRequest(
-                                    inserirDocenteRequest.email(),
-                                    inserirDocenteRequest.senha(),
-                                    "professor"
-                            );
-
-                            usuarioService.cadastraNovoLogin(inserirLoginRequest, token);
-
-
-                            return usuarioRepository.findByLogin(inserirDocenteRequest.email())
-                                    .orElseThrow(() -> new RuntimeException("Falha ao criar novo usuário"));
-
-                });
-        String newDocentePapel = newDocenteUsuario.getPapel().getNome().toString();
-
-
-        if (("pedagogico".equals(role) || "recruiter".equals(role)) && !"professor".equals(newDocentePapel)) {
+        if (("pedagogico".equals(role) || "recruiter".equals(role))) {
             log.error("Usuário pedagogico ou recruiter só pode salvar um docente com o papel professor");
             throw new SecurityException("Usuário pedagogico ou recruiter só pode salvar um docente com o papel professor");
         }
 
-        if (repository.existsByUsuarioId(inserirDocenteRequest.usuario())) {
-            log.debug("Um docente já existe com o Id de usuário: {}", inserirDocenteRequest.usuario());
-            throw new RuntimeException("Um docente já existe com o Id de usuário passado");
-        }
 
         DocenteEntity docente = new DocenteEntity();
-        UsuarioEntity user = new UsuarioEntity();
-        user.setId(newDocenteUsuario.getId());
         docente.setUsuario(user);
         docente.setNome(inserirDocenteRequest.nome());
         docente.setDataNascimento(inserirDocenteRequest.dataNascimento());
@@ -162,7 +141,6 @@ public class DocenteService {
         docente.setEstadoCivil(inserirDocenteRequest.estadoCivil());
         docente.setTelefone(inserirDocenteRequest.telefone());
         docente.setEmail(inserirDocenteRequest.email());
-        docente.setSenha(inserirDocenteRequest.senha());
         docente.setNaturalidade(inserirDocenteRequest.naturalidade());
         docente.setCep(inserirDocenteRequest.cep());
         docente.setCidade(inserirDocenteRequest.cidade());
@@ -213,8 +191,14 @@ public class DocenteService {
             throw new NotFoundException("Nenhum docente encontrado com o id passado");
         }
 
+        DocenteEntity docente = buscarPorId(id, token);
+        UsuarioEntity user = docente.getUsuario();
+
+
         log.info("Removendo docente com o id {}", id);
         repository.deleteById(id);
+        log.info("Removendo usuario vinculado ao docente com o id {}", id);
+        usuarioRepository.deleteById(user.getId());
     }
 
     public DocenteEntity atualizar(AtualizarDocenteRequest atualizarDocenteRequest, Long id, String token) {
@@ -232,19 +216,9 @@ public class DocenteService {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
-        if (repository.existsByNome(atualizarDocenteRequest.nome())) {
-            log.error("Um docente já existe com o nome: {}", atualizarDocenteRequest.nome());
-            throw new IllegalArgumentException("Um docente já existe com o nome passado");
-        }
-
         if (atualizarDocenteRequest.email() == null || atualizarDocenteRequest.email().isBlank()) {
             log.error("Email não pode ser nulo ou vazio");
             throw new IllegalArgumentException("Email não pode ser nulo ou vazio");
-        }
-
-        if (repository.existsByEmail(atualizarDocenteRequest.nome())) {
-            log.error("Um docente já existe com o email: {}", atualizarDocenteRequest.email());
-            throw new IllegalArgumentException("Um docente já existe com o email passado");
         }
 
         if (atualizarDocenteRequest.senha() == null || atualizarDocenteRequest.senha().isBlank()) {
@@ -263,7 +237,6 @@ public class DocenteService {
         entity.setEstadoCivil(atualizarDocenteRequest.estadoCivil());
         entity.setTelefone(atualizarDocenteRequest.telefone());
         entity.setEmail(atualizarDocenteRequest.email());
-        entity.setSenha(atualizarDocenteRequest.senha());
         entity.setNaturalidade(atualizarDocenteRequest.naturalidade());
         entity.setCep(atualizarDocenteRequest.cep());
         entity.setCidade(atualizarDocenteRequest.cidade());
@@ -274,6 +247,15 @@ public class DocenteService {
         entity.setBairro(atualizarDocenteRequest.bairro());
         entity.setPontoReferencia(atualizarDocenteRequest.pontoReferencia());
         entity.setMaterias(atualizarDocenteRequest.materias());
+
+        DocenteEntity docente = buscarPorId(id, token);
+        UsuarioEntity user = docente.getUsuario();
+
+        user.setLogin(atualizarDocenteRequest.email());
+        user.setSenha(bCryptPasswordEncoder.encode(atualizarDocenteRequest.senha()));
+        usuarioRepository.save(user);
+
+
         return repository.save(entity);
     }
 }
