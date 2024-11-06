@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,12 @@ class AlunoServiceTest {
 
     @Mock
     TokenService tokenService;
+
+    @Mock
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Mock
+    UsuarioService usuarioService;
 
     @InjectMocks
     AlunoService alunoService;
@@ -69,11 +76,12 @@ class AlunoServiceTest {
     void salvarAluno() {
         // given
         String token = "mock-token";
-        InserirAlunoRequest request = new InserirAlunoRequest("Aluno Teste", "2000-01-01", "","","","","","","","","","","","","","","","",1L, 1L);
+        InserirAlunoRequest request = new InserirAlunoRequest("Aluno Teste", "2000-01-01", "senha teste","","","","","","","","","","","","","","","",1L, 1L);
         when(tokenService.buscaCampo(token, "scope")).thenReturn("admin");
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(aluno.getUsuario()));
         when(turmaRepository.findById(1L)).thenReturn(Optional.of(new TurmaEntity()));
         when(alunoRepository.save(any())).thenReturn(aluno);
+        when(bCryptPasswordEncoder.encode(any(CharSequence.class))).thenReturn("encoded-password");
+        when(usuarioService.cadastraNovoLogin(any(), any())).thenReturn(new UsuarioEntity());
 
         // when
         AlunoResponse retorno = alunoService.salvar(request, token);
@@ -107,6 +115,7 @@ class AlunoServiceTest {
         String token = "mock-token";
         when(tokenService.buscaCampo(token, "scope")).thenReturn("admin");
         when(alunoRepository.existsById(aluno.getId())).thenReturn(true);
+        when(alunoRepository.findById(aluno.getId())).thenReturn(Optional.of(aluno));
 
         // when
         assertDoesNotThrow(() -> alunoService.removerPorId(aluno.getId(), token));
