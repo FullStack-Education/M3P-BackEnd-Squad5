@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +41,12 @@ class DocenteServiceTest {
 
     @Mock
     TokenService tokenService;
+
+    @Mock
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Mock
+    UsuarioService usuarioService;
 
     @InjectMocks
     DocenteService service;
@@ -63,6 +70,7 @@ class DocenteServiceTest {
     @Test
     @Order(1)
     void salvarDocente() {
+        // given
         String token = "mock-token";
         InserirDocenteRequest request = new InserirDocenteRequest(
                 "Docente Teste",
@@ -87,11 +95,13 @@ class DocenteServiceTest {
                 1L
         );
         when(tokenService.buscaCampo(token, "scope")).thenReturn("admin");
-        when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(docente.getUsuario()));
         when(repository.save(any())).thenReturn(docente);
+        when(usuarioService.cadastraNovoLogin(any(), any())).thenReturn(new UsuarioEntity());
 
+        // when
         DocenteResponse retorno = service.salvar(request, token);
 
+        // then
         assertNotNull(retorno);
         assertEquals(docente.getNome(), retorno.nome());
 
@@ -116,6 +126,7 @@ class DocenteServiceTest {
         String token = "mock-token";
         when(tokenService.buscaCampo(token, "scope")).thenReturn("admin");
         when(repository.existsById(docente.getId())).thenReturn(true);
+        when(repository.findById(docente.getId())).thenReturn(Optional.of(docente));
 
         assertDoesNotThrow(() -> service.removerPorId(docente.getId(), token));
 
